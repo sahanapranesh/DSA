@@ -2,7 +2,6 @@ package com.test.dsa.practice;
 
 class LinkedListTest {
 
-    @org.junit.jupiter.api.Test
     void add() {
         LinkedList linkedList = new LinkedList();
         linkedList.add(2);
@@ -16,7 +15,6 @@ class LinkedListTest {
         linkedList.print();
     }
 
-    @org.junit.jupiter.api.Test
     void delete() {
     }
 }

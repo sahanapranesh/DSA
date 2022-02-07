@@ -1,57 +1,69 @@
 package com.test.dsa.practice;
 
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SubsetSums {
-   Map<Integer, List> sumWithList = new HashMap<>();
+   private static List<Shipment> possibleShipments = new ArrayList<>();
+   private static Double maxSoFar = Double.MIN_VALUE;
 
-   public static void
-   findSubsets(List<List<Integer>> subset, ArrayList<Integer> nums, ArrayList<Integer> output, int index) {
-      // Base Condition
-      if (index == nums.size()) {
-         if (!output.isEmpty()) {
-            Integer subsetSum = output.stream().reduce(Integer::sum).get();
-            if (subsetSum < 200) {
-               subset.add(output);
+   static boolean findSubsets(List<List<Double>> shipments, List<Double> weights, List<Double> output, int index) {
+      if (index == weights.size()) {
+         return findPossibleShipments(shipments, output);
+      }
+      boolean foundShipments = findSubsets(shipments, weights, new ArrayList<>(output), index + 1);
+      if(foundShipments){
+         weights.removeAll(output);
+         //index = index - output.size();
+         output.clear();
+      }
+      output.add(weights.get(index));
+      foundShipments = findSubsets(shipments, weights, new ArrayList<>(output), index + 1);
+      if(foundShipments){
+         weights.removeAll(output);
+         output.clear();
+      }
+      return foundShipments;
+   }
+
+   private static boolean findPossibleShipments(List<List<Double>> shipments, List<Double> output) {
+      if (!output.isEmpty()) {
+         Double subsetSum = output.stream().reduce(Double::sum).get();
+         if (subsetSum <= 200) {
+            if (maxSoFar.compareTo(subsetSum) < 0) {
+               maxSoFar = subsetSum;
+               prepareShipment(output, subsetSum);
+               shipments.add(output);
+               return true;
             }
          }
-         return;
       }
-      findSubsets(subset, nums, new ArrayList<>(output), index + 1);
-      output.add(nums.get(index));
-      findSubsets(subset, nums, new ArrayList<>(output), index + 1);
-}
+      return false;
+   }
+
+   private static void prepareShipment(List<Double> output, Double subsetSum) {
+      Shipment shipment = new Shipment();
+      shipment.setTotalWeight(subsetSum);
+      shipment.setPackages(output);
+      possibleShipments.add(shipment);
+   }
 
    public static void main(String[] args) {
 
-      List<List<Integer>> subset = new ArrayList<>();
+      List<List<Double>> subset = new ArrayList<>();
 
-      ArrayList<Integer> input = new ArrayList<>();
-      input.add(50);
-      input.add(75);
-      input.add(110);
-      input.add(175);
-      input.add(155);
+      ArrayList<Double> input = new ArrayList<>();
+      input.add(175.0);
+      input.add(155.0);
+      input.add(110.0);
+      input.add(75.0);
+      input.add(50.0);
+      input.add(100.0);
+      input.add(200.0);
 
-      findSubsets(subset, input, new ArrayList<>(), 0);
-      Collections.sort(subset, (o1, o2) -> {
-         int n = Math.min(o1.size(), o2.size());
-         for (int i = 0; i < n; i++) {
-            if (o1.get(i) == o2.get(i)) {
-               continue;
-            } else {
-               return o1.get(i) - o2.get(i);
-            }
-         }
-         return 1;
-      });
-      // Printing Subset
-      for (List<Integer> integers : subset) {
-         for (Integer integer : integers) {
-            System.out.print(integer + " ");
-         }
-         System.out.println();
-      }
-
+      findSubsets(subset, input.stream().sorted().collect(Collectors.toList()), new ArrayList<>(), 0);
+      possibleShipments.sort(Comparator.comparingDouble(Shipment::getTotalWeight));
+      possibleShipments.forEach(System.out::println);
    }
 }
