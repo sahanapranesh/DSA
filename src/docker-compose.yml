@@ -1,0 +1,22 @@
+version: '3'
+services:
+  api:
+    image: microblink/api:latest
+    environment:
+      - LICENSEE=localhost
+      - LICENSE_KEY=sRwAAAUJbG9jYWxob3N0691Kl1fLgYorCVzMehjQ4B2aKKvNtv+JCRX70zq8KX0gKt5i/V94xrvwDUpv3D700jy9VMLJTAQMSXxPsaSjvjJ/pG/xijC5gVjs8FXXDfdoLnNcuNd7qvLD5HWod2GFPx5TPOE1YDQvhPIRDHosov8NjbQujn5OK6Jvg/FSxdPwsLqz1zvZZHrJqnbE7Ek=
+      - PORT=8080
+
+      ### You can only have one declaration of the JAVA_OPTS variable, every additional declaration will override the previous
+
+      ## Enables HTTPS access directly in Java application
+      # - JAVA_OPTS=-Dserver.ssl.enabled=true -Dserver.ssl.key-store-type=PKCS12 -Dserver.ssl.key-store=/custom/mounted/path/my-custom-keystore.p12 -Dserver.ssl.key-store-password=my-custom-keytore-password -Dserver.ssl.key-alias=custom-key-alias -Dserver.http.port=8081
+
+      ## Sets the maximum Java heap size
+      # - JAVA_OPTS=-Xmx4g
+
+    restart: unless-stopped
+    volumes:
+      - ./logs:/opt/microblink-api-ws/logs
+    ports:
+      - "8080:${PORT-8080}"
